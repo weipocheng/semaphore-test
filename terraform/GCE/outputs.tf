@@ -15,8 +15,11 @@ output "external_ip" {
 }
 
 output "ssh_command" {
-  value = length(google_compute_instance.vm.network_interface[0].access_config) > 0 ?
+  description = "SSH command for the VM (prefers external IP if it exists)"
+  value = (
+    length(google_compute_instance.vm.network_interface[0].access_config) > 0 ?
     "ssh ${var.ssh_user}@${google_compute_instance.vm.network_interface[0].access_config[0].nat_ip}" :
-    "No external IP assigned"
+    "ssh ${var.ssh_user}@${google_compute_instance.vm.network_interface[0].network_ip}"
+  )
 }
 
