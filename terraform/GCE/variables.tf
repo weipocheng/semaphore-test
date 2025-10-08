@@ -30,7 +30,7 @@ variable "image" {
 
 variable "disk_size_gb" {
   type    = number
-  default = 60
+  default = 80
 }
 
 variable "network" {
