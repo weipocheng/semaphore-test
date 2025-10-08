@@ -8,6 +8,14 @@ locals {
   merged_metadata = merge(local.ssh_metadata, var.metadata)
 }
 
+resource "google_compute_disk" "boot" {
+  name = "${local.base_name}-boot"
+  zone = var.zone
+  type = "pd-balanced"
+  size = var.disk_size_gb
+  image = var.image
+}
+
 resource "google_compute_instance" "vm" {
   name         = local.base_name
   machine_type = var.machine_type
@@ -17,12 +25,7 @@ resource "google_compute_instance" "vm" {
 
   boot_disk {
     auto_delete = true
-
-    initialize_params {
-      image = var.image
-      size  = var.disk_size_gb
-      type  = "pd-balanced"
-    }
+    source      = google_compute_disk.boot.id
   }
 
   network_interface {
@@ -59,4 +62,3 @@ resource "google_compute_firewall" "allow_ssh" {
   target_tags   = var.tags
   description   = "Allow SSH to ${local.base_name}"
 }
-
